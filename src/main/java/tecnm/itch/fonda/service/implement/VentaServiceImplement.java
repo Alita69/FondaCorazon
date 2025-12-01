@@ -14,6 +14,7 @@ import tecnm.itch.fonda.client.ClienteClient;
 import tecnm.itch.fonda.client.EmpleadoClient;
 import tecnm.itch.fonda.client.ReservaClient;
 import tecnm.itch.fonda.dto.AtenderDto;
+import tecnm.itch.fonda.dto.EmpleadoDto;
 import tecnm.itch.fonda.dto.VentaDto;
 import tecnm.itch.fonda.dto.VentaResponseDto;
 import tecnm.itch.fonda.entity.DetalleVenta;
@@ -22,7 +23,6 @@ import tecnm.itch.fonda.mapper.VentaMapper;
 import tecnm.itch.fonda.repository.ProductoRepository;
 import tecnm.itch.fonda.repository.VentaRepository;
 import tecnm.itch.fonda.service.VentaService;
-import tecnm.itch.reservaciones.dto.EmpleadoDto;
 
 @AllArgsConstructor
 @Service

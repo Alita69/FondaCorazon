@@ -12,7 +12,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import tecnm.itch.fonda.client.ClienteClient.ClienteDto;
-import tecnm.itch.reservaciones.dto.EmpleadoDto;
 
 @Getter
 @Setter

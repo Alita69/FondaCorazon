@@ -2,9 +2,9 @@ package tecnm.itch.fonda.service;
 
 import java.util.List;
 
+import tecnm.itch.fonda.dto.EmpleadoDto;
 import tecnm.itch.fonda.dto.VentaDto;
 import tecnm.itch.fonda.dto.VentaResponseDto;
-import tecnm.itch.reservaciones.dto.EmpleadoDto;
 
 public interface VentaService {
 

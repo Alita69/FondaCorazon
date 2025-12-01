@@ -21,11 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.AllArgsConstructor;
 import tecnm.itch.fonda.client.EmpleadoClient;
+import tecnm.itch.fonda.dto.EmpleadoDto;
 import tecnm.itch.fonda.dto.VentaDto;
 import tecnm.itch.fonda.dto.VentaResponseDto;
 import tecnm.itch.fonda.service.VentaService;
 import tecnm.itch.fonda.service.implement.TicketPdfService; // 1. IMPORTAR EL NUEVO SERVICIO
-import tecnm.itch.reservaciones.dto.EmpleadoDto;
 
 @CrossOrigin("*")
 @AllArgsConstructor

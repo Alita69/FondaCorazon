@@ -26,11 +26,11 @@ import tecnm.itch.fonda.ResourceNotFoundException;
 import tecnm.itch.fonda.client.ClienteClient;
 import tecnm.itch.fonda.client.ClienteClient.ClienteDto;
 import tecnm.itch.fonda.client.EmpleadoClient;
+import tecnm.itch.fonda.dto.EmpleadoDto;
 import tecnm.itch.fonda.entity.DetalleVenta;
 import tecnm.itch.fonda.entity.Venta;
 import tecnm.itch.fonda.repository.DetalleVentaRepository;
 import tecnm.itch.fonda.repository.VentaRepository;
-import tecnm.itch.reservaciones.dto.EmpleadoDto;
 
 @Service
 @AllArgsConstructor

@@ -1,15 +1,14 @@
-# --- ETAPA 1: Construir el JAR (Usamos Maven) ---
+# Etapa 1: Construcción
 FROM maven:3.8.5-openjdk-17 AS build
 WORKDIR /app
 COPY . .
-# Compilamos el proyecto y saltamos los tests para ahorrar tiempo
+# Compilar saltando tests para ir más rápido
 RUN mvn clean package -DskipTests
 
-# --- ETAPA 2: Ejecutar la App (Usamos una imagen ligera y moderna) ---
+# Etapa 2: Ejecución
 FROM eclipse-temurin:17-jdk-alpine
 VOLUME /tmp
-# Copiamos el JAR generado en la etapa anterior
-# Asegúrate de que el nombre 'fonda-0.0.1-SNAPSHOT.jar' coincida con tu pom.xml
+# Ajusta el nombre del jar si es diferente en tu pom.xml, por defecto suele ser:
 COPY --from=build /app/target/fonda-0.0.1-SNAPSHOT.jar app.jar
 EXPOSE 8080
 ENTRYPOINT ["java","-jar","/app.jar"]

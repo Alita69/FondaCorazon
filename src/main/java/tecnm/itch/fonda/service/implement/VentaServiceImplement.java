@@ -94,11 +94,16 @@ public class VentaServiceImplement implements VentaService {
 		if (guardada.getIdReserva() != null) {
 			try {
 				System.out.println("Confirmando reserva con ID: " + guardada.getIdReserva());
-				reservaClient.confirmarReserva(guardada.getIdReserva());
+				
+				// --- CORRECCIÓN AQUÍ ---
+				// Enviamos "{}" como cuerpo para satisfacer el "Length Required" de Google Cloud
+				reservaClient.confirmarReserva(guardada.getIdReserva(), "{}");
+				
 				System.out.println("Reserva confirmada.");
 			} catch (FeignException e) {
+				// Manejo de error (ya lo tienes, déjalo igual)
 				throw new IllegalStateException(
-						"La venta se guardó, pero falló al CONFIRMAR la reserva. La venta se cancelará. Error: "
+						"La venta se guardó, pero falló al CONFIRMAR la reserva. Error: "
 								+ e.getMessage());
 			}
 		}

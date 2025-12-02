@@ -16,33 +16,34 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http.cors(cors -> cors.configurationSource(corsConfigurationSource())).csrf(csrf -> csrf.disable())
-				.formLogin(form -> form.disable()).httpBasic(basic -> basic.disable())
-				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource())).csrf(csrf -> csrf.disable())
+                .formLogin(form -> form.disable()).httpBasic(basic -> basic.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-				.authorizeHttpRequests(authz -> authz
-						// 1. Permite las peticiones OPTIONS (para CORS pre-flight)
-						.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .authorizeHttpRequests(authz -> authz
+                        // 1. Permite las peticiones OPTIONS (para CORS pre-flight)
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-						// 2. ¡AQUÍ LA CLAVE! Permite que todos vean la carpeta de fotos
-						.requestMatchers("/uploads/**").permitAll()
+                        // 2. ¡AQUÍ LA CLAVE! Permite que todos vean la carpeta de fotos
+                        .requestMatchers("/uploads/**").permitAll()
 
-						// 3. Permite que React llame a tu API
-						.requestMatchers("/api/**").permitAll()
+                        // 3. Permite que React llame a tu API
+                        .requestMatchers("/api/**").permitAll()
 
-						// 4. (Opcional) Cierra todo lo demás. Por ahora lo dejamos en permitAll.
-						.anyRequest().permitAll());
+                        // 4. Cierra todo lo demás.
+                        .anyRequest().permitAll());
 
-		return http.build();
-	}
+        return http.build();
+    }
 
-@Bean
+    @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         
-        // CAMBIO CLAVE: Usar AllowedOriginPatterns con "*" permite cualquier origen + credenciales
+        // --- CORRECCIÓN: PERMITIR CONEXIÓN DESDE CUALQUIER LUGAR ---
+        // Cambiamos setAllowedOrigins por setAllowedOriginPatterns("*")
         configuration.setAllowedOriginPatterns(Arrays.asList("*")); 
         
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));

@@ -1,83 +1,65 @@
 package tecnm.itch.fonda.storage;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.UUID;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 
 @Service
 public class FileStorageService {
 
-	private final Path rootLocation;
-
 	@Autowired
-	public FileStorageService(@Value("${file.upload-dir}") String uploadDir) {
-		this.rootLocation = Paths.get(uploadDir);
-		try {
-			Files.createDirectories(rootLocation);
-		} catch (IOException e) {
-			throw new RuntimeException("No se pudo inicializar el almacenamiento de archivos", e);
-		}
-	}
+	private Cloudinary cloudinary;
 
 	public String store(MultipartFile file) {
 		try {
 			if (file.isEmpty()) {
 				return null;
 			}
-
-			String originalFilename = file.getOriginalFilename();
-			String extension = "";
-			if (originalFilename != null && originalFilename.contains(".")) {
-				extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-			}
-			String uniqueFilename = UUID.randomUUID().toString() + extension;
-
-			// Guarda el archivo
-			Files.copy(file.getInputStream(), this.rootLocation.resolve(uniqueFilename));
-
-			return uniqueFilename;
+			// Subir a Cloudinary
+			Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
+			
+			// Retornar la URL segura (https)
+			return uploadResult.get("secure_url").toString();
+			
 		} catch (IOException e) {
-			throw new RuntimeException("Falló al guardar el archivo.", e);
+			throw new RuntimeException("Falló la subida de la imagen a Cloudinary", e);
 		}
 	}
 
-	public Path load(String filename) {
-		return rootLocation.resolve(filename);
-	}
-
-	public Resource loadAsResource(String filename) {
-		try {
-			Path file = load(filename);
-			Resource resource = new UrlResource(file.toUri());
-			if (resource.exists() || resource.isReadable()) {
-				return resource;
-			} else {
-				throw new RuntimeException("No se pudo leer el archivo: " + filename);
-			}
-		} catch (MalformedURLException e) {
-			throw new RuntimeException("No se pudo leer el archivo: " + filename, e);
-		}
-	}
-
-	public void delete(String filename) {
-		if (filename == null || filename.isEmpty()) {
+	public void delete(String fotoUrl) {
+		if (fotoUrl == null || fotoUrl.isEmpty()) {
 			return;
 		}
 		try {
-			Path file = load(filename);
-			Files.deleteIfExists(file);
+			// Extraer el "public_id" de la URL de Cloudinary para borrarlo
+			String publicId = obtenerPublicId(fotoUrl);
+			
+			if(publicId != null) {
+				cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+			}
 		} catch (IOException e) {
-			System.err.println("Falló al borrar el archivo: " + filename);
+			System.err.println("Error al borrar imagen de Cloudinary: " + e.getMessage());
+		}
+	}
+	
+	private String obtenerPublicId(String fotoUrl) {
+		try {
+			// Lógica simple para obtener el ID: último segmento sin extensión
+			String[] partes = fotoUrl.split("/");
+			String ultimoSegmento = partes[partes.length - 1];
+			int puntoIndex = ultimoSegmento.lastIndexOf(".");
+			if (puntoIndex != -1) {
+				return ultimoSegmento.substring(0, puntoIndex);
+			}
+			return ultimoSegmento;
+		} catch (Exception e) {
+			return null;
 		}
 	}
 }

@@ -160,7 +160,7 @@ public class VentaServiceImplement implements VentaService {
 		return ventas.stream().map(this::mapToVentaResponseDto).collect(Collectors.toList());
 	}
 
-	private VentaResponseDto mapToVentaResponseDto(Venta venta) {
+private VentaResponseDto mapToVentaResponseDto(Venta venta) {
 		VentaResponseDto dto = new VentaResponseDto();
 		dto.setId_venta(venta.getIdVenta());
 		dto.setFecha_venta(venta.getFechaVenta());
@@ -169,7 +169,7 @@ public class VentaServiceImplement implements VentaService {
 		dto.setEstado(venta.getEstado());
 
 		try {
-			var clienteData = cliente.getClienteById(venta.getIdCliente());
+			var clienteData = cliente.getClienteById(venta.getIdCliente()); // Usa el clienteClient
 			if (clienteData != null) {
 				VentaResponseDto.ClienteInfo clienteInfo = new VentaResponseDto.ClienteInfo();
 				clienteInfo.setNombre_cliente(clienteData.getNombreCliente());
@@ -183,7 +183,11 @@ public class VentaServiceImplement implements VentaService {
 			var empleadoDto = empleadoClient.getEmpleadoById(venta.getIdEmpleado());
 			if (empleadoDto != null) {
 				VentaResponseDto.EmpleadoInfo empleadoInfo = new VentaResponseDto.EmpleadoInfo();
+				
+				// --- ¡AQUÍ ESTÁ EL CAMBIO IMPORTANTE! ---
+				empleadoInfo.setId_empleado(empleadoDto.getId_empleado()); // Guardamos el ID
 				empleadoInfo.setNombre(empleadoDto.getNombre());
+				
 				dto.setEmpleado(empleadoInfo);
 			}
 		} catch (FeignException e) {

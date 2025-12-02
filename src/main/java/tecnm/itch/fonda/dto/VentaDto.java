@@ -12,6 +12,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import tecnm.itch.fonda.client.ClienteClient.ClienteDto;
+// CAMBIO: Import local
+import tecnm.itch.fonda.dto.EmpleadoDto;
 
 @Getter
 @Setter

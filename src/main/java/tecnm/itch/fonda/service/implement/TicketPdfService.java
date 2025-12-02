@@ -26,11 +26,12 @@ import tecnm.itch.fonda.ResourceNotFoundException;
 import tecnm.itch.fonda.client.ClienteClient;
 import tecnm.itch.fonda.client.ClienteClient.ClienteDto;
 import tecnm.itch.fonda.client.EmpleadoClient;
-import tecnm.itch.fonda.dto.EmpleadoDto;
 import tecnm.itch.fonda.entity.DetalleVenta;
 import tecnm.itch.fonda.entity.Venta;
 import tecnm.itch.fonda.repository.DetalleVentaRepository;
 import tecnm.itch.fonda.repository.VentaRepository;
+// CAMBIO: Import local
+import tecnm.itch.fonda.dto.EmpleadoDto;
 
 @Service
 @AllArgsConstructor
@@ -42,10 +43,9 @@ public class TicketPdfService {
 	private final EmpleadoClient empleadoClient;
 	private final ClienteClient clienteClient;
 
-	// --- CORRECCIÓN 1: FUENTES AÑADIDAS ---
 	private static final Font FONT_TITULO = new Font(Font.HELVETICA, 20, Font.BOLD);
-	private static final Font FONT_SUBTITULO = new Font(Font.HELVETICA, 18, Font.BOLD); // <-- Faltaba esta
-	private static final Font FONT_HEADER = new Font(Font.HELVETICA, 11, Font.BOLD); // <-- Faltaba esta
+	private static final Font FONT_SUBTITULO = new Font(Font.HELVETICA, 18, Font.BOLD);
+	private static final Font FONT_HEADER = new Font(Font.HELVETICA, 11, Font.BOLD);
 	private static final Font FONT_TEXTO = new Font(Font.HELVETICA, 10, Font.NORMAL);
 	private static final Font FONT_TOTAL = new Font(Font.HELVETICA, 12, Font.BOLD);
 	private static final Font FONT_TABLA_HEADER = new Font(Font.HELVETICA, 9, Font.BOLD, Color.WHITE);
@@ -58,15 +58,13 @@ public class TicketPdfService {
 
 	@Transactional(readOnly = true)
 	public byte[] generarTicket(Integer idVenta) {
-		// 1. Obtener datos de la Venta
 		Venta venta = ventaRepository.findById(idVenta)
 				.orElseThrow(() -> new ResourceNotFoundException("Venta no encontrada con ID: " + idVenta));
 		List<DetalleVenta> detalles = detalleVentaRepository.findByVenta_IdVenta(idVenta);
 
-		// --- 2. BUSCAR LOS NOMBRES USANDO LOS CLIENTS ---
 		String nombreEmpleado = "No asignado";
 		try {
-			EmpleadoDto empleado = empleadoClient.getEmpleadoById(venta.getIdVenta());
+			EmpleadoDto empleado = empleadoClient.getEmpleadoById(venta.getIdEmpleado());
 			if (empleado != null && empleado.getNombre() != null) {
 				nombreEmpleado = empleado.getNombre();
 			}
@@ -97,14 +95,12 @@ public class TicketPdfService {
 			PdfWriter.getInstance(document, baos);
 			document.open();
 
-			// --- Encabezado de Empresa y Ticket ---
 			Paragraph titulo = new Paragraph("Fonda KOKORO", FONT_TITULO);
 			document.add(titulo);
 			document.add(new Paragraph("Av. ITCh 123, Colonia Tecnológico", FONT_TEXTO));
 			document.add(new Paragraph("Tel: 55-1234-5678", FONT_TEXTO));
 			document.add(new Paragraph("kokoro@fonda.com", FONT_TEXTO));
 
-			// Ahora 'FONT_SUBTITULO' sí existe
 			Paragraph subtitulo = new Paragraph("TICKET DE VENTA", FONT_SUBTITULO);
 			subtitulo.setAlignment(Element.ALIGN_RIGHT);
 			document.add(subtitulo);
@@ -116,21 +112,16 @@ public class TicketPdfService {
 			Paragraph fecha = new Paragraph("Fecha: " + dateFormatter.format(venta.getFechaVenta()), FONT_TEXTO);
 			fecha.setAlignment(Element.ALIGN_RIGHT);
 			document.add(fecha);
-			document.add(new Paragraph(" ")); // Espacio
+			document.add(new Paragraph(" ")); 
 
-			// --- 3. USAR LAS VARIABLES (Ahora 'FONT_HEADER' sí existe) ---
 			document.add(new Paragraph("Atendido por: " + nombreEmpleado, FONT_HEADER));
 			document.add(new Paragraph("Cliente: " + nombreCliente, FONT_HEADER));
 			document.add(new Paragraph("Origen: "
 					+ (venta.getIdReserva() != null ? "Reserva (ID: " + venta.getIdReserva() + ")" : "Venta en Local"),
 					FONT_HEADER));
 
-			document.add(new Paragraph(" ")); // Espacio
+			document.add(new Paragraph(" ")); 
 
-			// --- CORRECCIÓN 2: BLOQUE DUPLICADO ELIMINADO ---
-			// (Aquí estaba el código repetido, ya se quitó)
-
-			// --- 4. Tabla de Detalles ---
 			PdfPTable table = new PdfPTable(4);
 			table.setWidthPercentage(100);
 			table.setWidths(new float[] { 1f, 5f, 2f, 2f });
@@ -150,9 +141,8 @@ public class TicketPdfService {
 				table.addCell(createCell(currencyFormatter.format(subtotal), Element.ALIGN_RIGHT, FONT_TABLA_BODY));
 			}
 			document.add(table);
-			document.add(new Paragraph(" ")); // Espacio
+			document.add(new Paragraph(" ")); 
 
-			// --- 5. Totales ---
 			PdfPTable totalesTable = new PdfPTable(2);
 			totalesTable.setWidthPercentage(50);
 			totalesTable.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -185,7 +175,6 @@ public class TicketPdfService {
 		return baos.toByteArray();
 	}
 
-	// --- Métodos Helper (sin cambios) ---
 	private void addTableHeader(PdfPTable table, String headerText) {
 		PdfPCell cell = new PdfPCell();
 		cell.setBackgroundColor(new Color(50, 50, 50));

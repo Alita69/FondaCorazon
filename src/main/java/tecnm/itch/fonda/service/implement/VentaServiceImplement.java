@@ -14,7 +14,6 @@ import tecnm.itch.fonda.client.ClienteClient;
 import tecnm.itch.fonda.client.EmpleadoClient;
 import tecnm.itch.fonda.client.ReservaClient;
 import tecnm.itch.fonda.dto.AtenderDto;
-import tecnm.itch.fonda.dto.EmpleadoDto;
 import tecnm.itch.fonda.dto.VentaDto;
 import tecnm.itch.fonda.dto.VentaResponseDto;
 import tecnm.itch.fonda.entity.DetalleVenta;
@@ -23,6 +22,8 @@ import tecnm.itch.fonda.mapper.VentaMapper;
 import tecnm.itch.fonda.repository.ProductoRepository;
 import tecnm.itch.fonda.repository.VentaRepository;
 import tecnm.itch.fonda.service.VentaService;
+// CAMBIO: Import local
+import tecnm.itch.fonda.dto.EmpleadoDto;
 
 @AllArgsConstructor
 @Service
@@ -43,8 +44,7 @@ public class VentaServiceImplement implements VentaService {
 		}
 
 		try {
-			// --- CORRECCIÓN 1 ---
-			cliente.getClienteById(ventaDto.getId_cliente()); // <-- Se usa el nuevo nombre
+			cliente.getClienteById(ventaDto.getId_cliente()); 
 		} catch (FeignException.NotFound nf) {
 			throw new ResourceNotFoundException("Cliente no existe: " + ventaDto.getId_cliente());
 		} catch (FeignException fe) {
@@ -113,8 +113,7 @@ public class VentaServiceImplement implements VentaService {
 
 		if (updateVenta.getId_cliente() != null && !updateVenta.getId_cliente().equals(venta.getIdCliente())) {
 			try {
-				// --- CORRECCIÓN 2 ---
-				cliente.getClienteById(updateVenta.getId_cliente()); // <-- Se usa el nuevo nombre
+				cliente.getClienteById(updateVenta.getId_cliente());
 			} catch (FeignException.NotFound nf) {
 				throw new ResourceNotFoundException("Cliente no existe: " + updateVenta.getId_cliente());
 			} catch (FeignException fe) {
@@ -136,8 +135,7 @@ public class VentaServiceImplement implements VentaService {
 		VentaDto ventaDto = VentaMapper.mapToVentaDto(venta);
 
 		try {
-			// --- CORRECCIÓN 3 ---
-			var clienteDto = cliente.getClienteById(venta.getIdCliente()); // <-- Se usa el nuevo nombre
+			var clienteDto = cliente.getClienteById(venta.getIdCliente()); 
 			ventaDto.setCliente(clienteDto);
 		} catch (FeignException e) {
 			System.err.println("No se pudo obtener el cliente " + venta.getIdCliente() + ": " + e.getMessage());
@@ -171,8 +169,7 @@ public class VentaServiceImplement implements VentaService {
 		dto.setEstado(venta.getEstado());
 
 		try {
-			// --- CORRECCIÓN 4 ---
-			var clienteData = cliente.getClienteById(venta.getIdCliente()); // <-- Se usa el nuevo nombre
+			var clienteData = cliente.getClienteById(venta.getIdCliente());
 			if (clienteData != null) {
 				VentaResponseDto.ClienteInfo clienteInfo = new VentaResponseDto.ClienteInfo();
 				clienteInfo.setNombre_cliente(clienteData.getNombreCliente());
@@ -209,10 +206,7 @@ public class VentaServiceImplement implements VentaService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<VentaResponseDto> findVentasByFecha(String fecha) {
-		// 1. Llama al nuevo método del repositorio
 		List<Venta> ventas = ventaRepository.findVentasByFecha(fecha);
-
-		// 2. Reutiliza el mismo helper que ya tienes para mapear la respuesta
 		return ventas.stream().map(this::mapToVentaResponseDto).collect(Collectors.toList());
 	}
 
@@ -229,5 +223,4 @@ public class VentaServiceImplement implements VentaService {
 	public EmpleadoDto getEmpleadoById(Integer idEmpleado) {
 		return empleadoClient.getEmpleadoById(idEmpleado);
 	}
-
 }

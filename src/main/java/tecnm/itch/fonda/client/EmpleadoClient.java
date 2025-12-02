@@ -4,9 +4,8 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import tecnm.itch.reservaciones.dto.EmpleadoDto;
+import tecnm.itch.fonda.dto.EmpleadoDto;
 
-// CORRECCIÓN: Conectar directo a Reservaciones
 @FeignClient(name = "reservaciones", url = "${service.url.reservaciones}", contextId = "empleadoClient")
 public interface EmpleadoClient {
 

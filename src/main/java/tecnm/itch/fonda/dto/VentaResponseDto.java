@@ -26,7 +26,7 @@ public class VentaResponseDto {
 	@Getter
 	@Setter
 	public static class EmpleadoInfo {
-		private Integer id_empleado; // <--- ¡AGREGADO!
+		private Integer id_empleado; // <--- ¡ESTE ES EL CAMPO QUE FALTABA!
 		private String nombre;
 	}
 }

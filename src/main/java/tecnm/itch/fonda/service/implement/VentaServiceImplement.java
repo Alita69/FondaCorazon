@@ -22,8 +22,7 @@ import tecnm.itch.fonda.mapper.VentaMapper;
 import tecnm.itch.fonda.repository.ProductoRepository;
 import tecnm.itch.fonda.repository.VentaRepository;
 import tecnm.itch.fonda.service.VentaService;
-// CAMBIO: Import local
-import tecnm.itch.fonda.dto.EmpleadoDto;
+import tecnm.itch.reservaciones.dto.EmpleadoDto;
 
 @AllArgsConstructor
 @Service
@@ -160,7 +159,7 @@ public class VentaServiceImplement implements VentaService {
 		return ventas.stream().map(this::mapToVentaResponseDto).collect(Collectors.toList());
 	}
 
-private VentaResponseDto mapToVentaResponseDto(Venta venta) {
+	private VentaResponseDto mapToVentaResponseDto(Venta venta) {
 		VentaResponseDto dto = new VentaResponseDto();
 		dto.setId_venta(venta.getIdVenta());
 		dto.setFecha_venta(venta.getFechaVenta());
@@ -169,7 +168,7 @@ private VentaResponseDto mapToVentaResponseDto(Venta venta) {
 		dto.setEstado(venta.getEstado());
 
 		try {
-			var clienteData = cliente.getClienteById(venta.getIdCliente()); // Usa el clienteClient
+			var clienteData = cliente.getClienteById(venta.getIdCliente());
 			if (clienteData != null) {
 				VentaResponseDto.ClienteInfo clienteInfo = new VentaResponseDto.ClienteInfo();
 				clienteInfo.setNombre_cliente(clienteData.getNombreCliente());
@@ -184,8 +183,8 @@ private VentaResponseDto mapToVentaResponseDto(Venta venta) {
 			if (empleadoDto != null) {
 				VentaResponseDto.EmpleadoInfo empleadoInfo = new VentaResponseDto.EmpleadoInfo();
 				
-				// --- ¡AQUÍ ESTÁ EL CAMBIO IMPORTANTE! ---
-				empleadoInfo.setId_empleado(empleadoDto.getId_empleado()); // Guardamos el ID
+				// --- ASIGNAMOS EL ID PARA QUE EL FRONTEND LO LEA ---
+				empleadoInfo.setId_empleado(empleadoDto.getId_empleado()); 
 				empleadoInfo.setNombre(empleadoDto.getNombre());
 				
 				dto.setEmpleado(empleadoInfo);

@@ -22,7 +22,9 @@ import tecnm.itch.fonda.mapper.VentaMapper;
 import tecnm.itch.fonda.repository.ProductoRepository;
 import tecnm.itch.fonda.repository.VentaRepository;
 import tecnm.itch.fonda.service.VentaService;
-import tecnm.itch.reservaciones.dto.EmpleadoDto;
+
+// --- CORRECCIÓN: USAR EL DTO LOCAL, NO EL DE RESERVACIONES ---
+import tecnm.itch.fonda.dto.EmpleadoDto; 
 
 @AllArgsConstructor
 @Service
@@ -183,8 +185,8 @@ public class VentaServiceImplement implements VentaService {
 			if (empleadoDto != null) {
 				VentaResponseDto.EmpleadoInfo empleadoInfo = new VentaResponseDto.EmpleadoInfo();
 				
-				// --- ASIGNAMOS EL ID PARA QUE EL FRONTEND LO LEA ---
-				empleadoInfo.setId_empleado(empleadoDto.getId_empleado()); 
+				// Llenamos los datos del empleado (incluyendo ID para el frontend)
+				empleadoInfo.setId_empleado(empleadoDto.getId_empleado());
 				empleadoInfo.setNombre(empleadoDto.getNombre());
 				
 				dto.setEmpleado(empleadoInfo);
